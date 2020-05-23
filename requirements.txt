@@ -1,0 +1,12 @@
+flask
+flask-restful
+flask-sqlalchemy
+pymysql
+flask-migrate
+flask-script
+flask-jwt-extended
+flask-requests
+pytest
+pytest-cov
+Werkzeug==0.16.0
+Flask-Cors

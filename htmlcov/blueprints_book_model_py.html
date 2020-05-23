@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
+    <title>Coverage for blueprints/book/model.py: 100%</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="jquery.isonscreen.js"></script>
+    <script type="text/javascript" src="coverage_html.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(coverage.pyfile_ready);
+    </script>
+</head>
+<body class="pyfile">
+<div id="header">
+    <div class="content">
+        <h1>Coverage for <b>blueprints/book/model.py</b> :
+            <span class="pc_cov">100%</span>
+        </h1>
+        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        <h2 class="stats">
+            26 statements &nbsp;
+            <span class="run shortkey_r button_toggle_run">26 run</span>
+            <span class="mis show_mis shortkey_m button_toggle_mis">0 missing</span>
+            <span class="exc show_exc shortkey_x button_toggle_exc">0 excluded</span>
+        </h2>
+    </div>
+</div>
+<div class="help_panel">
+    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
+    <p class="legend">Hot-keys on this page</p>
+    <div>
+    <p class="keyhelp">
+        <span class="key">r</span>
+        <span class="key">m</span>
+        <span class="key">x</span>
+        <span class="key">p</span> &nbsp; toggle line displays
+    </p>
+    <p class="keyhelp">
+        <span class="key">j</span>
+        <span class="key">k</span> &nbsp; next/prev highlighted chunk
+    </p>
+    <p class="keyhelp">
+        <span class="key">0</span> &nbsp; (zero) top of page
+    </p>
+    <p class="keyhelp">
+        <span class="key">1</span> &nbsp; (one) first highlighted chunk
+    </p>
+    </div>
+</div>
+<div id="source">
+    <p id="t1" class="run"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="key">from</span> <span class="nam">blueprints</span> <span class="key">import</span> <span class="nam">db</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t2" class="run"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="key">from</span> <span class="nam">flask_restful</span> <span class="key">import</span> <span class="nam">fields</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t3" class="run"><span class="n"><a href="#t3">3</a></span><span class="t"><span class="key">from</span> <span class="nam">sqlalchemy</span><span class="op">.</span><span class="nam">sql</span> <span class="key">import</span> <span class="nam">func</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t4" class="run"><span class="n"><a href="#t4">4</a></span><span class="t"><span class="key">from</span> <span class="nam">sqlalchemy</span><span class="op">.</span><span class="nam">sql</span><span class="op">.</span><span class="nam">expression</span> <span class="key">import</span> <span class="nam">text</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t5" class="run"><span class="n"><a href="#t5">5</a></span><span class="t"><span class="key">from</span> <span class="nam">datetime</span> <span class="key">import</span> <span class="nam">datetime</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t6" class="pln"><span class="n"><a href="#t6">6</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t7" class="run"><span class="n"><a href="#t7">7</a></span><span class="t"><span class="key">from</span> <span class="nam">sqlalchemy</span> <span class="key">import</span> <span class="nam">Table</span><span class="op">,</span> <span class="nam">Column</span><span class="op">,</span> <span class="nam">Integer</span><span class="op">,</span> <span class="nam">ForeignKey</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t8" class="run"><span class="n"><a href="#t8">8</a></span><span class="t"><span class="key">from</span> <span class="nam">sqlalchemy</span><span class="op">.</span><span class="nam">orm</span> <span class="key">import</span> <span class="nam">relationship</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t9" class="run"><span class="n"><a href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="nam">sqlalchemy</span><span class="op">.</span><span class="nam">ext</span><span class="op">.</span><span class="nam">declarative</span> <span class="key">import</span> <span class="nam">declarative_base</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t10" class="run"><span class="n"><a href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="nam">sqlalchemy</span><span class="op">.</span><span class="nam">orm</span> <span class="key">import</span> <span class="nam">backref</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t11" class="pln"><span class="n"><a href="#t11">11</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t12" class="run"><span class="n"><a href="#t12">12</a></span><span class="t"><span class="key">class</span> <span class="nam">Books</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">Model</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t13" class="run"><span class="n"><a href="#t13">13</a></span><span class="t">    <span class="nam">__tablename__</span> <span class="op">=</span> <span class="str">"books"</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t14" class="run"><span class="n"><a href="#t14">14</a></span><span class="t">    <span class="nam">id</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">Integer</span><span class="op">,</span> <span class="nam">primary_key</span><span class="op">=</span><span class="key">True</span><span class="op">,</span> <span class="nam">autoincrement</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t15" class="run"><span class="n"><a href="#t15">15</a></span><span class="t">    <span class="nam">title</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">String</span><span class="op">(</span><span class="num">100</span><span class="op">)</span><span class="op">,</span> <span class="nam">nullable</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t16" class="run"><span class="n"><a href="#t16">16</a></span><span class="t">    <span class="nam">isbn</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">String</span><span class="op">(</span><span class="num">20</span><span class="op">)</span><span class="op">,</span> <span class="nam">nullable</span><span class="op">=</span><span class="key">True</span><span class="op">,</span> <span class="nam">default</span><span class="op">=</span><span class="str">"123-456-789"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t17" class="run"><span class="n"><a href="#t17">17</a></span><span class="t">    <span class="nam">writer</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">String</span><span class="op">(</span><span class="num">20</span><span class="op">)</span><span class="op">,</span> <span class="nam">nullable</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t18" class="run"><span class="n"><a href="#t18">18</a></span><span class="t">    <span class="nam">created_at</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">DateTime</span><span class="op">(</span><span class="nam">timezone</span><span class="op">=</span><span class="key">True</span><span class="op">)</span><span class="op">,</span> <span class="nam">server_default</span><span class="op">=</span><span class="nam">func</span><span class="op">.</span><span class="nam">now</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t19" class="run"><span class="n"><a href="#t19">19</a></span><span class="t">    <span class="nam">updated_at</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">DateTime</span><span class="op">(</span><span class="nam">timezone</span><span class="op">=</span><span class="key">True</span><span class="op">)</span><span class="op">,</span> <span class="nam">onupdate</span><span class="op">=</span><span class="nam">func</span><span class="op">.</span><span class="nam">now</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t20" class="run"><span class="n"><a href="#t20">20</a></span><span class="t">    <span class="nam">deleted_at</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">DateTime</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t21" class="run"><span class="n"><a href="#t21">21</a></span><span class="t">    <span class="nam">rent</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">relationship</span><span class="op">(</span><span class="str">'Rent'</span><span class="op">,</span> <span class="nam">backref</span><span class="op">=</span><span class="str">'books'</span><span class="op">,</span> <span class="nam">lazy</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t22" class="pln"><span class="n"><a href="#t22">22</a></span><span class="t">    <span class="com"># address = db.Column(db.String(100))</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t23" class="pln"><span class="n"><a href="#t23">23</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t24" class="run"><span class="n"><a href="#t24">24</a></span><span class="t">    <span class="nam">response_fields</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t25" class="pln"><span class="n"><a href="#t25">25</a></span><span class="t">        <span class="str">'id'</span><span class="op">:</span> <span class="nam">fields</span><span class="op">.</span><span class="nam">Integer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t26" class="pln"><span class="n"><a href="#t26">26</a></span><span class="t">        <span class="str">'title'</span><span class="op">:</span> <span class="nam">fields</span><span class="op">.</span><span class="nam">String</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t27" class="pln"><span class="n"><a href="#t27">27</a></span><span class="t">        <span class="str">'isbn'</span><span class="op">:</span> <span class="nam">fields</span><span class="op">.</span><span class="nam">String</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t28" class="pln"><span class="n"><a href="#t28">28</a></span><span class="t">        <span class="str">'writer'</span><span class="op">:</span> <span class="nam">fields</span><span class="op">.</span><span class="nam">String</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t29" class="pln"><span class="n"><a href="#t29">29</a></span><span class="t">    <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t30" class="pln"><span class="n"><a href="#t30">30</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t31" class="run"><span class="n"><a href="#t31">31</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">title</span><span class="op">,</span> <span class="nam">isbn</span><span class="op">,</span> <span class="nam">writer</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t32" class="run"><span class="n"><a href="#t32">32</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">title</span> <span class="op">=</span> <span class="nam">title</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t33" class="run"><span class="n"><a href="#t33">33</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">isbn</span> <span class="op">=</span> <span class="nam">isbn</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t34" class="run"><span class="n"><a href="#t34">34</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">writer</span> <span class="op">=</span> <span class="nam">writer</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t35" class="pln"><span class="n"><a href="#t35">35</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t36" class="run"><span class="n"><a href="#t36">36</a></span><span class="t">    <span class="key">def</span> <span class="nam">__repr__</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t37" class="run"><span class="n"><a href="#t37">37</a></span><span class="t">        <span class="key">return</span> <span class="str">'&lt;Book %r>'</span> <span class="op">%</span> <span class="nam">self</span><span class="op">.</span><span class="nam">id</span>&nbsp;</span><span class="r"></span></p>
+</div>
+<div id="footer">
+    <div class="content">
+        <p>
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.1</a>,
+            created at 2020-04-20 22:07
+        </p>
+    </div>
+</div>
+</body>
+</html>
