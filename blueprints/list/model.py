@@ -16,6 +16,7 @@ class Lists(db.Model):
     boardId = db.Column(db.Integer, db.ForeignKey("boards.id"), nullable=False)
     title = db.Column(db.String(255), nullable=False)
     order = db.Column(db.Integer, nullable=False)
+    cards = db.Column(db.String(255))
     # archived = db.Column(db.Boolean, default=False, server_default="false")
 
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
@@ -28,6 +29,7 @@ class Lists(db.Model):
         'boardId': fields.Integer,
         'title': fields.String,
         'order': fields.Integer,
+        'cards': fields.Integer,
         # 'archived': fields.Integer,
     }
 

@@ -8,6 +8,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from sqlalchemy import desc
 
 from .model import Lists
+from blueprints.card.model import Cards
 
 bp_list = Blueprint('list', __name__)
 api = Api(bp_list)
@@ -109,10 +110,22 @@ class AllList(Resource):
         parser.add_argument('boardId', location='args')
         args = parser.parse_args()
 
-        qry = Lists.query.filter_by(boardId=args['boardId']).all()
-        if qry is not None:
-            return marshal(qry, Lists.response_fields), 200
-        return {'status': 'LISTS_NOT_FOUND'}, 404
+        listsQry = Lists.query.filter_by(boardId=args['boardId']).all()
+        if listsQry is None:
+            return {'status': 'LISTS_NOT_FOUND'}, 404
+
+        allLists = []
+        for data in listsQry:
+            marshalData = marshal(data, Lists.response_fields)
+            listId = data.id
+            cardInList = Cards.query.filter_by(listId=listId).order_by(Cards.order).all()
+            cards=[]
+            for card in cardInList:
+                marshalCard = marshal (card, Cards.response_fields)
+                cards.append(marshalCard)
+            marshalData['cards'] = cards
+            allLists.append(marshalData)
+        return allLists, 200
 
 
 api.add_resource(ListResource, '')

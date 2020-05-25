@@ -15,7 +15,7 @@ class Cards(db.Model):
     __tablename__ = "cards"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     listId = db.Column(db.Integer, db.ForeignKey("lists.id"), nullable=False)
-    title = db.Column(db.String(255), nullable=False)
+    text = db.Column(db.String(255), nullable=False)
     order = db.Column(db.Integer, nullable=False)
     description = db.Column(LONGTEXT(charset='latin1'))
     members = db.Column(db.String(255))
@@ -36,14 +36,14 @@ class Cards(db.Model):
     response_fields = {
         'id': fields.Integer,
         'listId': fields.Integer,
-        'title': fields.String,
+        'text': fields.String,
         'order': fields.Integer,
         'members': fields.String,
     }
 
-    def __init__(self, listId, title, order):
+    def __init__(self, listId, text, order):
         self.listId = listId
-        self.title = title
+        self.text = text
         self.order = order
 
     def __repr__(self):
