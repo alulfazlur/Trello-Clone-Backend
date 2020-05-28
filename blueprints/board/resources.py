@@ -8,6 +8,9 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from sqlalchemy import desc
 
 from .model import Boards
+from blueprints.list.model import Lists
+from blueprints.card.model import Cards
+from blueprints.card.model import CardMembers
 
 bp_board = Blueprint('board', __name__)
 api = Api(bp_board)
@@ -41,9 +44,18 @@ class BoardResource(Resource):
         args = parser.parse_args()
 
         qry = Boards.query.get(args['id'])
-        if qry is not None:
-            return marshal(qry, Boards.response_fields), 200
-        return {'status': 'BOARD_NOT_FOUND'}, 404
+        if qry is None:
+            return {'status': 'BOARD_NOT_FOUND'}, 404
+
+        marshalBoard = marshal(qry, Boards.response_fields)
+        listId = qry.id
+        listInBoard = Lists.query.filter_by(boardId=args["id"]).order_by(Lists.order).all()
+        lists=[]
+        for listQry in listInBoard:
+            marshalList = marshal (listQry, Lists.response_fields)
+            lists.append(marshalList)
+        marshalBoard['lists'] = lists
+        return marshalBoard, 200
 
     @user_required
     def put(self):
@@ -97,10 +109,32 @@ class BoardList(Resource):
         claims = get_jwt_claims()
         ownerId = claims['id']
 
-        qry = Boards.query.filter_by(ownerId=ownerId).all()
-        if qry is not None:
-            return marshal(qry, Boards.response_fields), 200
-        return {'status': 'BOARDS_NOT_FOUND'}, 404
+        boardList = Boards.query.filter_by(ownerId=ownerId).all()
+        if boardList is None:
+            return {'status': 'BOARD_NOT_FOUND'}, 404
+        boards = []
+        for board in boardList:
+            marshalBoard = marshal(board, Boards.response_fields)
+            listInBoard = Lists.query.filter_by(boardId=board.id).order_by(Lists.order).all()
+            lists=[]
+            for listQry in listInBoard:
+                marshalList = marshal(listQry, Lists.response_fields)
+                cardInList = Cards.query.filter_by(listId=listQry.id).order_by(Cards.order).all()
+                cards=[]
+                for card in cardInList:
+                    marshalCard = marshal(card, Cards.response_fields)
+                    cardMembers = CardMembers.query.filter_by(cardId=card.id).order_by(CardMembers.memberId).all()
+                    members =[]
+                    for member in cardMembers:
+                        marshalMember = marshal(member, CardMembers.response_fields)
+                        members.append(marshalMember)
+                    marshalCard["members"]=members
+                    cards.append(marshalCard)
+                marshalList["cards"]=cards
+                lists.append(marshalList)
+            marshalBoard['lists'] = lists
+            boards.append(marshalBoard)
+        return boards, 200
 
 
 api.add_resource(BoardResource, '')

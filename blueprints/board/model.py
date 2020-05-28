@@ -19,7 +19,7 @@ class Boards(db.Model):
     memberIds = db.Column(db.Integer)
     background = db.Column(db.String(255), nullable=False, default="green")
     description = db.Column(LONGTEXT(charset='latin1'))
-
+    lists = db.Column(db.String(255))
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
@@ -33,6 +33,7 @@ class Boards(db.Model):
         'memberIds': fields.String,
         'background': fields.String,
         'description': fields.String,
+        'lists': fields.String,
     }
 
     def __init__(self, ownerId, title):

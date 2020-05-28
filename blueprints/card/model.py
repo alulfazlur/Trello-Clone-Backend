@@ -19,6 +19,7 @@ class Cards(db.Model):
     order = db.Column(db.Integer, nullable=False)
     description = db.Column(LONGTEXT(charset='latin1'))
     members = db.Column(db.String(255))
+    code = db.Column(db.String(255))
 
     # KALO SEMPET
     # archived = db.Column(db.Boolean, default=False, server_default="false")
@@ -39,12 +40,14 @@ class Cards(db.Model):
         'text': fields.String,
         'order': fields.Integer,
         'members': fields.String,
+        'code': fields.String,
     }
 
-    def __init__(self, listId, text, order):
+    def __init__(self, listId, text, order, code):
         self.listId = listId
         self.text = text
         self.order = order
+        self.code = code
 
     def __repr__(self):
         return '<Cards %r>' % self.id

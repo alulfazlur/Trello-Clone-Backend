@@ -9,6 +9,8 @@ from sqlalchemy import desc
 
 from .model import Lists
 from blueprints.card.model import Cards
+from blueprints.card.model import CardMembers
+from blueprints.board.model import Boards
 
 bp_list = Blueprint('list', __name__)
 api = Api(bp_list)
@@ -31,7 +33,10 @@ class ListResource(Resource):
         else : 
             order = len(lastOrder)
 
-        qry = Lists(args['boardId'], args['title'], order)
+        salt = uuid.uuid4()
+        code = ('%s%s' % (args['title'], salt)).encode('utf-8')
+
+        qry = Lists(args['boardId'], args['title'], order, code)
         db.session.add(qry)
         db.session.commit()
 
@@ -45,9 +50,23 @@ class ListResource(Resource):
         args = parser.parse_args()
 
         qry = Lists.query.get(args['id'])
-        if qry is not None:
-            return marshal(qry, Lists.response_fields), 200
-        return {'status': 'LIST_NOT_FOUND'}, 404
+        if qry is None:
+            return {'status': 'LIST_NOT_FOUND'}, 404
+        
+        cardQry = Cards.query.filter_by(listId=args["id"]).order_by(Cards.order).all()
+        marhsalList = marshal(qry, Lists.response_fields)
+        cards=[]
+        for card in cardQry:
+            marshalCard = marshal(card, Cards.response_fields)
+            cardMembers = CardMembers.query.filter_by(cardId=card.id).order_by(CardMembers.memberId).all()
+            members=[]
+            for member in cardMembers:
+                marshalMember = marshal(member, CardMembers.response_fields)
+                members.append(marshalMember)
+            marshalCard["members"] = members
+            cards.append(marshalCard)
+        marhsalList["cards"]=cards
+        return marhsalList, 200
 
     @user_required
     def put(self):
@@ -100,6 +119,67 @@ class ListResource(Resource):
 
         return {'status': 'LIST_DELETED'}, 200
 
+class ListReorder(Resource):
+	def options(self, id=None):
+		return {'status': 'ok'}, 200
+
+	@user_required
+	def put(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('code', location='json', required=True)
+		parser.add_argument('boardId', location='json', required=True)
+		parser.add_argument('order', location='json')
+		args = parser.parse_args()
+
+		qry = Lists.query.filter_by(code=args['code']).first()
+		if qry is None:
+			return {'status': 'LIST_NOT_FOUND'}, 404
+		
+		thisOrder = qry.order
+		# Jika dipindah tapi berada di list yang sama
+		if args["boardId"] == qry.boardId:
+			if args['order'] is not None:
+				newOrder = int(args['order'])
+				listinBoard = Lists.query.filter_by(boardId=args["boardId"]).all()
+				for listQry in listinBoard :
+					# Jika dipindah kebawah
+					if newOrder > thisOrder :
+						if listQry.order <= newOrder and listQry.order > thisOrder:
+							listQry.order -= 1
+							db.session.commit()
+					# Jika dipindah keatas
+					elif newOrder < thisOrder :
+						if listQry.order >= newOrder and listQry.order < thisOrder:
+							listQry.order += 1
+							db.session.commit()
+				qry.order = args['order']
+				db.session.commit()
+		
+		# Jika dipindah tapi berada di list yang berbeda
+		elif args["boardId"] != qry.boardId:
+			listInOldBoard = Lists.query.filter_by(boardId=qry.boardId).all()
+			# Jika order di list lama dibawah yang dipindah, maka order -1
+			for listQry in listInOldBoard :
+				if listQry.order > int(qry.order) :
+					listQry.order -= 1
+					db.session.commit()
+
+			if args['order'] is None:
+				listInNewBoard = Lists.query.filter_by(boardId=args["boardId"]).all()
+				qry.order = len(listInNewBoard)
+				db.session.commit()
+				
+			if args['order'] is not None:
+				listInNewBoard = Lists.query.filter_by(boardId=args["boardId"]).all()
+				for listQry in listInNewBoard:
+					if int(args['order']) <= listQry.order:
+						listQry.order += 1
+						db.session.commit()
+				qry.order = args['order']
+			qry.boardId = args["boardId"]
+			db.session.commit()
+
+		return marshal(qry, Lists.response_fields), 200, {'Content-Type': 'application/json'}
 
 class AllList(Resource):
     def options(self, id=None):
@@ -110,7 +190,7 @@ class AllList(Resource):
         parser.add_argument('boardId', location='args')
         args = parser.parse_args()
 
-        listsQry = Lists.query.filter_by(boardId=args['boardId']).all()
+        listsQry = Lists.query.filter_by(boardId=args['boardId']).order_by(Lists.order).all()
         if listsQry is None:
             return {'status': 'LISTS_NOT_FOUND'}, 404
 
@@ -129,4 +209,5 @@ class AllList(Resource):
 
 
 api.add_resource(ListResource, '')
+api.add_resource(ListReorder, '/reorder')
 api.add_resource(AllList, '/list')

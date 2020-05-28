@@ -17,6 +17,7 @@ class Lists(db.Model):
     title = db.Column(db.String(255), nullable=False)
     order = db.Column(db.Integer, nullable=False)
     cards = db.Column(db.String(255))
+    code = db.Column(db.String(255))
     # archived = db.Column(db.Boolean, default=False, server_default="false")
 
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
@@ -31,12 +32,14 @@ class Lists(db.Model):
         'order': fields.Integer,
         'cards': fields.Integer,
         # 'archived': fields.Integer,
+        'code': fields.String,
     }
 
-    def __init__(self, boardId, title, order):
+    def __init__(self, boardId, title, order, code):
         self.boardId = boardId
         self.title = title
         self.order = order
+        self.code = code
 
     def __repr__(self):
         return '<Lists %r>' % self.id

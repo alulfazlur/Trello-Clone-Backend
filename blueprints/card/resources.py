@@ -30,8 +30,10 @@ class CardResource(Resource):
 			order = 0
 		else : 
 			order = len(lastOrder)
-
-		qry = Cards(args['listId'], args['text'], order)
+			
+		salt = uuid.uuid4()
+		code = ('%s%s' % (args['text'], salt)).encode('utf-8')
+		qry = Cards(args['listId'], args['text'], order, code)
 		db.session.add(qry)
 		db.session.commit()
 
@@ -82,10 +84,10 @@ class CardResource(Resource):
 		db.session.commit()
 		
 		thisOrder = qry.order
-		newOrder = int(args['order'])
 		# Jika dipindah tapi berada di list yang sama
 		if int(args['listId']) == qry.listId:
 			if args['order'] is not None:
+				newOrder = int(args['order'])
 				cardInList = Cards.query.filter_by(listId=args["listId"]).all()
 				for card in cardInList :
 					# Jika dipindah kebawah
@@ -151,6 +153,76 @@ class CardResource(Resource):
 
 		return {'status': 'CARD_DELETED'}, 200
 
+class CardReorder(Resource):
+	def options(self, id=None):
+		return {'status': 'ok'}, 200
+
+	@user_required
+	def put(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('code', location='json', required=True)
+		parser.add_argument('listCode', location='json', required=True)
+		parser.add_argument('order', location='json')
+		args = parser.parse_args()
+
+		qry = Cards.query.filter_by(code=args['code']).first()
+		if qry is None:
+			return {'status': 'CARD_NOT_FOUND'}, 404
+		
+		thisOrder = qry.order
+		listQry = Lists.query.filter_by(code=args["listCode"]).first()
+		listId = listQry.id
+		# Jika dipindah tapi berada di list yang sama
+		if listId == qry.listId:
+			if args['order'] is not None:
+				newOrder = int(args['order'])
+				listQry = Lists.query.filter_by(code=args["listCode"]).first()
+				listId = listQry.id
+				cardInList = Cards.query.filter_by(listId=listId).all()
+				for card in cardInList :
+					# Jika dipindah kebawah
+					if newOrder > thisOrder :
+						if card.order <= newOrder and card.order > thisOrder:
+							card.order -= 1
+							db.session.commit()
+					# Jika dipindah keatas
+					elif newOrder < thisOrder :
+						if card.order >= newOrder and card.order < thisOrder:
+							card.order += 1
+							db.session.commit()
+				qry.order = args['order']
+				db.session.commit()
+		
+		# Jika dipindah tapi berada di list yang berbeda
+		elif listId != qry.listId:
+			cardInOldList = Cards.query.filter_by(listId=qry.listId).all()
+			# Jika order di list lama dibawah yang dipindah, maka order -1
+			for card in cardInOldList :
+				if card.order > int(qry.order) :
+					card.order -= 1
+					db.session.commit()
+
+			if args['order'] is None:
+				listQry = Lists.query.filter_by(code=args["listCode"]).first()
+				listId = listQry.id
+				cardInNewList = Cards.query.filter_by(listId=listId).all()
+				qry.order = len(cardInNewList)
+				db.session.commit()
+				
+			if args['order'] is not None:
+				listQry = Lists.query.filter_by(code=args["listCode"]).first()
+				listId = listQry.id
+				cardInNewList = Cards.query.filter_by(listId=listId).all()
+				for card in cardInNewList:
+					if int(args['order']) <= card.order:
+						card.order += 1
+						db.session.commit()
+				qry.order = args['order']
+			qry.listId = listId
+			db.session.commit()
+
+		return marshal(qry, Cards.response_fields), 200, {'Content-Type': 'application/json'}
+	
 
 class CardList(Resource):
 	def options(self, id=None):
@@ -226,4 +298,5 @@ class CardMemberResource(Resource):
 
 api.add_resource(CardResource, '')
 api.add_resource(CardList, '/list')
+api.add_resource(CardReorder, '/reorder')
 api.add_resource(CardMemberResource, '/member')
