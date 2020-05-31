@@ -7,7 +7,7 @@ from flask_restful import Resource, Api, reqparse, marshal, inputs
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, get_jwt_claims
 from sqlalchemy import desc
 
-from .model import Cards, CardMembers
+from .model import Cards, CardMembers, CardLabels
 from blueprints.list.model import Lists
 from blueprints.board.model import Boards
 from blueprints.user.model import Users
@@ -43,16 +43,16 @@ class CardResource(Resource):
 
 	def get(self):
 		parser = reqparse.RequestParser()
-		parser.add_argument('id', location='args')
+		parser.add_argument('cardId', location='json')
 		args = parser.parse_args()
 
-		qry = Cards.query.get(args['id'])
+		qry = Cards.query.get(args['cardId'])
 		if qry is None:
 			return {'status': 'CARD_NOT_FOUND'}, 404
 		
 		marshalQry = marshal(qry, Cards.response_fields)
 
-		members = CardMembers.query.filter_by(cardId=args["id"]).all()
+		members = CardMembers.query.filter_by(cardId=args["cardId"]).all()
 		listMembers =[]
 		for member in members:
 			memberId = member.memberId
@@ -265,20 +265,28 @@ class CardMemberResource(Resource):
 		args = parser.parse_args()
 
 		memberId = Users.query.filter_by(username=args["username"]).first().id
-		qry = CardMembers(args['cardId'], memberId)
-		db.session.add(qry)
-		db.session.commit()
-
-		app.logger.debug('DEBUG : %s', qry)
-
-		return marshal(qry, CardMembers.response_fields), 200, {'Content-Type': 'application/json'}
-
+		check= CardMembers.query.filter_by(cardId=args["cardId"], memberId=memberId).first()
+		if check is None :
+			qry = CardMembers(args['cardId'], memberId)
+			db.session.add(qry)
+			db.session.commit()
+			app.logger.debug('DEBUG : %s', qry)
+			# return marshal(qry, CardMembers.response_fields), 200, {'Content-Type': 'application/json'}
+			membersQry = CardMembers.query.filter_by(cardId=args["cardId"]).all()
+			cardmembers = []
+			for member in membersQry:
+				memberProfile = Users.query.get(member.memberId)
+				marshalMemberProfile = marshal(memberProfile, Users.response_fields)
+				cardmembers.append(marshalMemberProfile)
+			return cardmembers, 200, {'Content-Type': 'application/json'}
+		return {'status': 'MEMBER_IS_EXIST'}, 400
+		
 	def get(self):
 		parser = reqparse.RequestParser()
-		parser.add_argument('cardId', location='json', required=True)
+		parser.add_argument('id', location='args', required=True)
 		args = parser.parse_args()
 
-		qry = CardMembers.query.filter_by(cardId=args["cardId"])
+		qry = CardMembers.query.get(args["id"])
 		return marshal(qry, CardMembers.response_fields), 200, {'Content-Type': 'application/json'}
 	
 	@user_required
@@ -294,9 +302,104 @@ class CardMemberResource(Resource):
 		db.session.delete(qry)
 		db.session.commit()
 
-		return {'status': 'CARD_MEMBER_DELETED'}, 200
+		membersQry = CardMembers.query.filter_by(cardId=args["cardId"]).all()
+		cardmembers = []
+		for member in membersQry:
+			memberProfile = Users.query.get(member.memberId)
+			marshalMemberProfile = marshal(memberProfile, Users.response_fields)
+			cardmembers.append(marshalMemberProfile)
+		return cardmembers, 200, {'Content-Type': 'application/json'}
+
+class CardMemberList(Resource):
+	def options(self, id=None):
+		return {'status': 'ok'}, 200
+
+	def get(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('cardId', location='args', required=True)
+		args = parser.parse_args()
+
+		membersQry = CardMembers.query.filter_by(cardId=args["cardId"]).all()
+		cardmembers = []
+		for member in membersQry:
+			memberProfile = Users.query.get(member.memberId)
+			marshalMemberProfile = marshal(memberProfile, Users.response_fields)
+			cardmembers.append(marshalMemberProfile)
+		return cardmembers, 200, {'Content-Type': 'application/json'}
+
+class CardLabelResource(Resource):
+	def options(self, id=None):
+		return {'status': 'ok'}, 200
+
+	@user_required
+	def post(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('cardId', location='json', required=True)
+		parser.add_argument('label', location='json', required=True)
+		args = parser.parse_args()
+
+		check= CardLabels.query.filter_by(cardId=args["cardId"], label=args["label"]).first()
+		if check is None :
+			qry = CardLabels(args['cardId'], args["label"])
+			db.session.add(qry)
+			db.session.commit()
+			app.logger.debug('DEBUG : %s', qry)
+			# return marshal(qry, CardLabels.response_fields), 200, {'Content-Type': 'application/json'}
+			labelsQry = CardLabels.query.filter_by(cardId=args["cardId"]).all()
+			cardLabels =[]
+			for label in labelsQry:
+				marshalLabel = marshal(label, CardLabels.response_fields)
+				cardLabels.append(marshalLabel)
+			return cardLabels, 200, {'Content-Type': 'application/json'}
+		return {'status': 'LABEL_IS_EXIST'}, 400
+		
+	def get(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('id', location='args', required=True)
+		args = parser.parse_args()
+
+		qry = CardLabels.query.get(args["id"])
+		return marshal(qry, CardLabels.response_fields), 200, {'Content-Type': 'application/json'}
+	
+	@user_required
+	def delete(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('cardId', location='json', required=True)
+		parser.add_argument('label', location='json', required=True)
+		args = parser.parse_args()
+
+		qry = CardLabels.query.filter_by(cardId=args["cardId"], label=args["label"]).first()
+
+		db.session.delete(qry)
+		db.session.commit()
+
+		cardLabels =[]
+		labelsQry = CardLabels.query.filter_by(cardId=args["cardId"]).all()
+		for label in labelsQry:
+			marshalLabel = marshal(label, CardLabels.response_fields)
+			cardLabels.append(marshalLabel)
+		return cardLabels, 200, {'Content-Type': 'application/json'}
+
+class CardLabelList(Resource):
+	def options(self, id=None):
+		return {'status': 'ok'}, 200
+
+	def get(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('cardId', location='args', required=True)
+		args = parser.parse_args()
+
+		labelsQry = CardLabels.query.filter_by(cardId=args["cardId"]).all()
+		cardLabels =[]
+		for label in labelsQry:
+			marshalLabel = marshal(label, CardLabels.response_fields)
+			cardLabels.append(marshalLabel)
+		return cardLabels, 200, {'Content-Type': 'application/json'}
 
 api.add_resource(CardResource, '')
 api.add_resource(CardList, '/list')
 api.add_resource(CardReorder, '/reorder')
+api.add_resource(CardMemberList, '/member/list')
 api.add_resource(CardMemberResource, '/member')
+api.add_resource(CardLabelList, '/label/list')
+api.add_resource(CardLabelResource, '/label')

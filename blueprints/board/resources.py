@@ -7,10 +7,11 @@ from flask_restful import Resource, Api, reqparse, marshal, inputs
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, get_jwt_claims
 from sqlalchemy import desc
 
-from .model import Boards
+from .model import Boards, BoardMembers
 from blueprints.list.model import Lists
 from blueprints.card.model import Cards
 from blueprints.card.model import CardMembers
+from blueprints.user.model import Users
 
 bp_board = Blueprint('board', __name__)
 api = Api(bp_board)
@@ -53,8 +54,29 @@ class BoardResource(Resource):
         lists=[]
         for listQry in listInBoard:
             marshalList = marshal (listQry, Lists.response_fields)
+            cardInList = Cards.query.filter_by(listId=listQry.id).order_by(Cards.order).all()
+            cards=[]
+            for card in cardInList:
+                marshalCard = marshal(card, Cards.response_fields)
+                cardMembers = CardMembers.query.filter_by(cardId=card.id).order_by(CardMembers.memberId).all()
+                members =[]
+                for member in cardMembers:
+                    marshalMember = marshal(member, CardMembers.response_fields)
+                    members.append(marshalMember)
+                marshalCard["members"]=members
+                cards.append(marshalCard)
+            marshalList["cards"]=cards
             lists.append(marshalList)
         marshalBoard['lists'] = lists
+        
+        members = BoardMembers.query.filter_by(boardId=args["id"]).all()
+        listMembers = []
+        for member in members :
+            memberId = member.memberId
+            profile = Users.query.get(memberId)
+            marshalProfile = marshal(profile, Users.response_fields)
+            listMembers.append(marshalProfile)
+        marshalBoard["memberIds"] = listMembers
         return marshalBoard, 200
 
     @user_required
@@ -133,9 +155,62 @@ class BoardList(Resource):
                 marshalList["cards"]=cards
                 lists.append(marshalList)
             marshalBoard['lists'] = lists
+
+            members = BoardMembers.query.filter_by(boardId=board.id).all()
+            boardMembers = []
+            for member in members :
+                memberId = member.memberId
+                profile = Users.query.get(memberId)
+                marshalProfile = marshal(profile, Users.response_fields)
+                boardMembers.append(marshalProfile)
+            marshalBoard["memberIds"] = boardMembers
             boards.append(marshalBoard)
         return boards, 200
 
+class BoardMemberResource(Resource):
+	def options(self, id=None):
+		return {'status': 'ok'}, 200
+
+	@user_required
+	def post(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('boardId', location='json', required=True)
+		parser.add_argument('username', location='json', required=True)
+		args = parser.parse_args()
+
+		memberId = Users.query.filter_by(username=args["username"]).first().id
+		check= BoardMembers.query.filter_by(boardId=args["boardId"], memberId=memberId).first()
+		if check is None :
+			qry = BoardMembers(args['boardId'], memberId)
+			db.session.add(qry)
+			db.session.commit()
+			app.logger.debug('DEBUG : %s', qry)
+			return marshal(qry, BoardMembers.response_fields), 200, {'Content-Type': 'application/json'}
+		return {'status': 'MEMBER_IS_EXIST'}, 400
+		
+	def get(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('id', location='args', required=True)
+		args = parser.parse_args()
+
+		qry = BoardMembers.query.get(args["id"])
+		return marshal(qry, BoardMembers.response_fields), 200, {'Content-Type': 'application/json'}
+	
+	@user_required
+	def delete(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('boardId', location='json', required=True)
+		parser.add_argument('username', location='json', required=True)
+		args = parser.parse_args()
+
+		memberId = Users.query.filter_by(username=args["username"]).first().id
+		qry = BoardMembers.query.filter_by(boardId=args["boardId"], memberId=memberId).first()
+
+		db.session.delete(qry)
+		db.session.commit()
+
+		return {'status': 'CARD_MEMBER_DELETED'}, 200
 
 api.add_resource(BoardResource, '')
 api.add_resource(BoardList, '/list')
+api.add_resource(BoardMemberResource, '/member')

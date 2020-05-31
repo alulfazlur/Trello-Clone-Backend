@@ -14,7 +14,7 @@ from blueprints import db
 class Boards(db.Model):
     __tablename__ = "boards"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    ownerId = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    ownerId = db.Column(db.Integer, db.ForeignKey("users.id", ondelete='CASCADE'), nullable=False)
     title = db.Column(db.String(255), nullable=False)
     memberIds = db.Column(db.Integer)
     background = db.Column(db.String(255), nullable=False, default="green")
@@ -25,6 +25,8 @@ class Boards(db.Model):
 
     boardId = db.relationship(
 		'Lists', backref='boards', lazy=True, uselist=False, cascade="all, delete-orphan")
+    boardId = db.relationship(
+		'BoardMembers', backref='boards', lazy=True, uselist=False, cascade="all, delete-orphan")
 
     response_fields = {
         'id': fields.Integer,
@@ -43,3 +45,25 @@ class Boards(db.Model):
 
     def __repr__(self):
         return '<Boards %r>' % self.id
+
+class BoardMembers(db.Model):
+    __tablename__ = "board_members"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    boardId = db.Column(db.Integer, db.ForeignKey("boards.id"), nullable=False)
+    memberId = db.Column(db.String(255), nullable=False)
+
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
+
+    response_fields = {
+        'id': fields.Integer,
+        'boardId': fields.Integer,
+        'memberId': fields.String,
+    }
+
+    def __init__(self, boardId, memberId):
+        self.boardId = boardId
+        self.memberId = memberId
+
+    def __repr__(self):
+        return '<CardMembers %r>' % self.id
