@@ -132,7 +132,7 @@ class CardResource(Resource):
 	@user_required
 	def delete(self):
 		parser = reqparse.RequestParser()
-		parser.add_argument('id', location='args', required=True)
+		parser.add_argument('id', location='json', required=True)
 		args = parser.parse_args()
 
 		qry = Cards.query.get(args['id'])
