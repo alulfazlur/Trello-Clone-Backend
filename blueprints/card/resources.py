@@ -271,14 +271,14 @@ class CardMemberResource(Resource):
 			db.session.add(qry)
 			db.session.commit()
 			app.logger.debug('DEBUG : %s', qry)
-			# return marshal(qry, CardMembers.response_fields), 200, {'Content-Type': 'application/json'}
-			membersQry = CardMembers.query.filter_by(cardId=args["cardId"]).all()
-			cardmembers = []
-			for member in membersQry:
-				memberProfile = Users.query.get(member.memberId)
-				marshalMemberProfile = marshal(memberProfile, Users.response_fields)
-				cardmembers.append(marshalMemberProfile)
-			return cardmembers, 200, {'Content-Type': 'application/json'}
+			return marshal(qry, CardMembers.response_fields), 200, {'Content-Type': 'application/json'}
+			# membersQry = CardMembers.query.filter_by(cardId=args["cardId"]).all()
+			# cardmembers = []
+			# for member in membersQry:
+			# 	memberProfile = Users.query.get(member.memberId)
+			# 	marshalMemberProfile = marshal(memberProfile, Users.response_fields)
+			# 	cardmembers.append(marshalMemberProfile)
+			# return cardmembers, 200, {'Content-Type': 'application/json'}
 		return {'status': 'MEMBER_IS_EXIST'}, 400
 		
 	def get(self):
@@ -344,13 +344,13 @@ class CardLabelResource(Resource):
 			db.session.add(qry)
 			db.session.commit()
 			app.logger.debug('DEBUG : %s', qry)
-			# return marshal(qry, CardLabels.response_fields), 200, {'Content-Type': 'application/json'}
-			labelsQry = CardLabels.query.filter_by(cardId=args["cardId"]).all()
-			cardLabels =[]
-			for label in labelsQry:
-				marshalLabel = marshal(label, CardLabels.response_fields)
-				cardLabels.append(marshalLabel)
-			return cardLabels, 200, {'Content-Type': 'application/json'}
+			return marshal(qry, CardLabels.response_fields), 200, {'Content-Type': 'application/json'}
+			# labelsQry = CardLabels.query.filter_by(cardId=args["cardId"]).all()
+			# cardLabels =[]
+			# for label in labelsQry:
+			# 	marshalLabel = marshal(label, CardLabels.response_fields)
+			# 	cardLabels.append(marshalLabel)
+			# return cardLabels, 200, {'Content-Type': 'application/json'}
 		return {'status': 'LABEL_IS_EXIST'}, 400
 		
 	def get(self):
