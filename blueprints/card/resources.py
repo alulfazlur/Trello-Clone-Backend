@@ -43,7 +43,7 @@ class CardResource(Resource):
 
 	def get(self):
 		parser = reqparse.RequestParser()
-		parser.add_argument('cardId', location='json')
+		parser.add_argument('cardId', location='args')
 		args = parser.parse_args()
 
 		qry = Cards.query.get(args['cardId'])
@@ -71,6 +71,7 @@ class CardResource(Resource):
 		parser.add_argument('text', location='json')
 		parser.add_argument('order', location='json')
 		parser.add_argument('description', location='json')
+		parser.add_argument('cover', location='json')
 		args = parser.parse_args()
 
 		qry = Cards.query.get(args['id'])
@@ -81,6 +82,8 @@ class CardResource(Resource):
 			qry.text = args['text']
 		if args['description'] is not None:
 			qry.description = args['description']
+		if args['cover'] is not None:
+			qry.cover = args['cover']
 		db.session.commit()
 		
 		thisOrder = qry.order

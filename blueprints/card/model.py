@@ -21,7 +21,8 @@ class Cards(db.Model):
     members = db.Column(db.String(255))
     code = db.Column(db.String(255))
     labels = db.Column(db.String(255))
-   
+    cover = db.Column(db.String(255))
+    
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
@@ -38,6 +39,7 @@ class Cards(db.Model):
         'members': fields.String,
         'code': fields.String,
         'labels': fields.String,
+        'cover': fields.String,
     }
 
     def __init__(self, listId, text, order, code):
