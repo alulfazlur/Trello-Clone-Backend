@@ -93,3 +93,7 @@ app.register_blueprint(bp_list, url_prefix='/list')
 app.register_blueprint(bp_card, url_prefix='/card')
 
 db.create_all()
+
+@app.route('/')
+def hello_world():
+        return {"message": "This is Trello Clone Bakend by Fazlur Rahman!"}, 200
