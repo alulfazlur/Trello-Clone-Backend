@@ -7,7 +7,7 @@ ssh-add -k ~/.ssh/id_rsa &&
 
 source ~/.profile
 echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USERNAME --password-stdin
-sudo docker stop trello-fe
-sudo docker rm trello-fe
-sudo docker rmi alulfazlur/trello-fe:latest
-sudo docker run -d --name trello-fe -p 9000:9000 alulfazlur/trello-fe:latest
+sudo docker stop trello-be
+sudo docker rm trello-be
+sudo docker rmi alulfazlur/trello-be:latest
+sudo docker run -d --name trello-be -p 9000:9000 alulfazlur/trello-be:latest

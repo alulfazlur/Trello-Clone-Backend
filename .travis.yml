@@ -5,7 +5,7 @@ os:
 - linux
 env:
   global:
-  - DOCKER_IMAGE_NAME="trello-fe"
+  - DOCKER_IMAGE_NAME="trello-be"
   - DOCKER_HUB_ORG="alulfazlur"
 before_install:
 - openssl aes-256-cbc -K $encrypted_db2095f63ba3_key -iv $encrypted_db2095f63ba3_iv
