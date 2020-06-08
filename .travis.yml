@@ -4,11 +4,12 @@ services:
 os:
 - linux
 env:
- global:
- - DOCKER_IMAGE_NAME="trello-fe"
- - DOCKER_HUB_ORG="alulfazlur"
+  global:
+  - DOCKER_IMAGE_NAME="trello-fe"
+  - DOCKER_HUB_ORG="alulfazlur"
 before_install:
-- openssl aes-256-cbc -K $encrypted_db2095f63ba3_key -iv $encrypted_db2095f63ba3_iv -in deploy_rsa.enc -out deploy_rsa -d
+- openssl aes-256-cbc -K $encrypted_db2095f63ba3_key -iv $encrypted_db2095f63ba3_iv
+  -in deploy_rsa.enc -out deploy_rsa -d
 - eval "$(ssh-agent -s)"
 - chmod 600 deploy_rsa
 - ssh-add deploy_rsa
@@ -17,7 +18,8 @@ script:
 - sudo chmod +x deploy.sh
 - sudo chmod 600 deploy_rsa
 after_script:
-- docker build -t ${DOCKER_HUB_ORG}/${DOCKER_IMAGE_NAME}:backend-${TRAVIS_BUILD_ID} .
+- docker build -t ${DOCKER_HUB_ORG}/${DOCKER_IMAGE_NAME}:backend-${TRAVIS_BUILD_ID}
+  .
 - docker push ${DOCKER_HUB_ORG}/${DOCKER_IMAGE_NAME}:backend-${TRAVIS_BUILD_ID}
 - docker tag ${DOCKER_HUB_ORG}/${DOCKER_IMAGE_NAME}:backend-${TRAVIS_BUILD_ID} ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
 - docker push ${DOCKER_HUB_ORG}/${DOCKER_IMAGE_NAME}:latest
