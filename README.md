@@ -2,7 +2,7 @@
 https://trello.fazlurtech.my.id
 
 ## Description
-This project is a clone of a trello built with React-redux and using library react-beautiful-dnd.
+This project is a clone of a trello built with Flask and SQLAlchemy
 ![Apps preview](https://github.com/alulfazlur/Trello-Clone-Frontend/blob/master/src/images/image.png)
 
 ## Features
@@ -12,6 +12,3 @@ This project is a clone of a trello built with React-redux and using library rea
 
 ## Purpose
 Alterra Academy assignment for my personal portofolio
-
-## Libaries
-react, react-beautiful-dnd, redux, react-textarea-autosize
