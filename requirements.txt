@@ -8,5 +8,5 @@ flask-jwt-extended
 flask-requests
 pytest
 pytest-cov
-Werkzeug==0.16.0
+Werkzeug==2.2.3
 Flask-Cors
